@@ -21,6 +21,9 @@ int main()
 		cout << "43) Multiply by number;" << endl;
 		cout << "44) Multiply by Matrix;" << endl;
 		cout << "45) Transpose Matrix;" << endl;
+		cout << "46) Rank;" << endl;
+		cout << "47) Inverted matrix;" << endl;
+		cout << "48) Minor;" << endl;
 		cout << "51) Adamar;" << endl;
 		cout << "52) Matrix trace;" << endl;
 		cout << "53) Square Matrix Determinant;" << endl;
@@ -29,6 +32,7 @@ int main()
 		cout << "56) Norm;" << endl;
 		cout << "57) Max Norm;" << endl;
 		cout << "58) Mat norm;" << endl;
+		cout << "59) Vectors Angle;" << endl;
 		cout << "9) Clear console;" << endl;
 		cout << "10) Exit." << endl;
 		cin >> sw;
@@ -251,6 +255,52 @@ int main()
 						 signal = 0;
 						 break;
 			}
+			case 46: {
+						 int a;
+						 for (int i = 0; i < Matrixs.size(); i++) {
+							 cout << i + 1 << ") ";
+							 signal = 1;
+							 Matrixs[i].Display(signal);
+						 }
+						 if (Matrixs.size() == 0)
+							 throw 7;
+						 cout << "Choose 1 Matrix which rank you want to know: ";
+						 cin >> a;
+						 cout << "\nRank = " << Matrixs.at(a - 1).Rank() << '\n' << endl;
+						 signal = 0;
+						 break;
+			}
+			case 47: {
+						 int a;
+						 for (int i = 0; i < Matrixs.size(); i++) {
+							 cout << i + 1 << ") ";
+							 signal = 1;
+							 Matrixs[i].Display(signal);
+						 }
+						 if (Matrixs.size() == 0)
+							 throw 7;
+						 cout << "Choose 1 Matrix to invert: ";
+						 cin >> a;
+						 cout << "\nCompleted!\n" << endl;
+						 Matrixs.push_back(Matrixs.at(a - 1).InvertMat());
+						 signal = 0;
+						 break;
+			}
+			case 48: {
+						 int a, i, j;
+						 for (int i = 0; i < Matrixs.size(); i++) {
+							 cout << i + 1 << ") ";
+							 signal = 1;
+							 Matrixs[i].Display(signal);
+						 }
+						 if (Matrixs.size() == 0)
+							 throw 7;
+						 cout << "Choose 1 Matrix view minor and 2 numbers (row and column): ";
+						 cin >> a >> i >> j;
+						 cout << Matrixs.at(a - 1).Minor(i-1, j-1) << '\n' << endl;;
+						 signal = 0;
+						 break;
+			}
 			case 51: {
 						int a, b;
 						for (int i = 0; i < Matrixs.size(); i++) {
@@ -380,6 +430,23 @@ int main()
 						signal = 0;
 						break;
 			}
+			case 59:{
+						int a, b;
+						for (int i = 0; i < Matrixs.size(); i++) {
+							cout << i + 1 << ") ";
+							signal = 1;
+							Matrixs[i].Display(signal);
+						}
+						if (Matrixs.size() == 0 || Matrixs.size() == 1)
+							throw 7;
+						cout << "Choose 2 Vectors which angle you want to know: ";
+						cin >> a >> b;
+						if (a == b)
+							throw 1;
+						cout << "\nAngle = " << Matrixs.at(a - 1).VectAngle(Matrixs.at(b - 1)) << '\n' << endl;
+						signal = 0;
+						break;
+			}
 			case 9: { system("cls");
 						break;
 			}
@@ -409,11 +476,15 @@ int main()
 			if (err == 9)
 				cout << "\nTrace : error\n" << endl;
 			if (err == 10)
-				cout << "\nDet : error\n" << endl;
+				cout << "\nShould be square : error\n" << endl;
 			if (err == 11)
 				cout << "\nScalar : error\n" << endl;
 			if (err == 12)
 				cout << "\nNorm : error\n" << endl;
+			if (err == 13)
+				cout << "\nIs not vector : error\n" << endl;
+			if (err == 14)
+				cout << "\nDet is 0 : error\n" << endl;
 		}
 
 	} while (sw != 10);

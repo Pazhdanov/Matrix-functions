@@ -147,14 +147,34 @@ double Matrix::Trace()
 	return trace;
 }
 
-double Matrix::DetByGauss()
+int Matrix::Rank()
 {
 	if (n != m)
 		throw 10;
-	Matrix tmp(1, m);
-	double det = 1, mu;
+	int signal = 0, nim = 0;
+	Matrix tmp(n, m);
+	tmp.Mat = Mat;
+	tmp = tmp.ElemChange(0);
+	for (int k = 0; k < n; k++)
+	if (tmp.Mat[k][0] == 0){
+		for (int c = 0; c < m; c++){
+			if (tmp.Mat[k][c] == 0)
+				signal++;
+			}
+		if (signal == m){
+			nim++;
+		}
+		signal = 0;
+	}
+	return tmp.n - nim;
+}
+
+Matrix Matrix::ElemChange(int num)
+{
+	Matrix tmp(1, m), M(n, m);
+	double mu;
 	int sign = 0;
-	
+
 	for (int l = 0; l < n; l++){
 		for (int k = 0; k < m - 1; k++)
 		if (Mat.at(k).at(k) == 0)
@@ -165,17 +185,52 @@ double Matrix::DetByGauss()
 			for (int c = 0; c < n; c++) Mat.at(k).at(c) = Mat.at(r).at(c);
 			for (int c = 0; c < n; c++) Mat.at(r).at(c) = tmp.Element(0, c);
 			sign += abs(r - k);
+			l++;
 		}
 		for (int i = l + 1; i < n; i++){
 			mu = Mat[i][l] / Mat[l][l];
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < n; j++){
 				Mat[i][j] -= Mat[l][j] * mu;
+				//Display(0);
+				cout << '\n';
+			}
 		}
 	}
+	double numu;
+	int signal = 0;
+	for (int l = 0; l < n; l++){
+		numu = Mat[l][0];
+		for (int k = 0; k < n; k++)
+		if (Mat[k][0] == numu && k != l){
+			for (int c = 0; c < m; c++)
+				if (Mat[k][c] == Mat[l][c])
+					signal++;
+			if (signal == m)
+			for (int c1 = 0; c1 < m; c1++)
+				Mat[k][c1] = 0;
+			signal = 0;
+		}
+	}
+	if (sign % 2 == 1 && num == 1)
+		Mat[0][0] = -Mat[0][0];
+	M.Mat = Mat;
+	//M.Display(0);
+	return M;
+}
+
+double Matrix::DetByGauss()
+{
+	if (n != m)
+		throw 10;
+	Matrix tmp(n, m);
+	tmp.Mat = Mat;
+	double det = 1;
+	
+	tmp = tmp.ElemChange(1);
+
 	for (int i = 0; i < n; i++)
-		det *= Mat.at(i).at(i);
-	if (sign % 2 == 0)
-		det = -det;
+		det *= tmp.Mat.at(i).at(i);
+
 	return det;
 }
 
@@ -232,6 +287,58 @@ Matrix Matrix::Vect(Matrix& rv)
 	if (rv.n != 1) rv = rv.Transpose();
 	if (rv.m != n)
 		throw 13;
-	C.Display(0);
+	//C.Display(0);
 	return rv * C;
+}
+
+double Matrix::VectLarge()
+{
+	if (n != 1 && m != 1)
+		throw 13;
+	Matrix C(m, n);
+	double sum = 0;
+	C.Mat = Mat;
+	if (m != 1) C = C.Transpose();
+	for (int i = 0; i < n; i++)
+		sum += C.Element(0, i) * C.Element(0, i);
+	return sqrt(sum);
+}
+
+double Matrix::VectAngle(Matrix& rv)
+{
+	if ((n != 1 && m != 1) || (rv.n != 1 && rv.m != 1))
+		throw 13;
+	return acos(Scalar(rv) / (VectLarge() * rv.VectLarge())) * 180.0 / 3.14159265;
+}
+
+double Matrix::Minor(int n1, int n2)
+{
+	Matrix tmp(n, m);
+	tmp.Mat = Mat;
+	tmp.Mat.erase(tmp.Mat.begin()+n1);
+	for (int i = 0; i < n - 1; i++)
+		tmp.Mat.at(i).erase(tmp.Mat.at(i).begin() + n2);
+	Matrix tmp1(n - 1, m - 1);
+	tmp1.Mat = tmp.Mat;
+	return tmp1.DetByGauss();
+}
+
+Matrix Matrix::InvertMat()
+{
+	double det;
+	Matrix tmp(n, m);
+	if (DetByGauss())
+	{
+		det = DetByGauss();
+		for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++){
+			tmp.Element(i, j) = pow(-1, i + j) * Minor(i, j);
+		}
+		
+		tmp = tmp.Transpose();
+		tmp * (1 / det);
+		tmp.Display(0);
+		return tmp;
+	}
+	else throw 14;
 }

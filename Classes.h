@@ -39,6 +39,12 @@ public:
 	double MaxNorm();
 	double MatNorm();
 	Matrix Vect(Matrix& rv);
+	double VectLarge();
+	double VectAngle(Matrix& rv);
+	Matrix ElemChange(int n);
+	int Rank();
+	Matrix InvertMat();
+	double Minor(int n1, int n2);
 };
 
 class Elementary : public Matrix{
