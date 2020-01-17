@@ -64,6 +64,58 @@ double &Matrix::Element(int i, int j) {
     return Mat[i][j];
 }
 
+void Matrix::operator>>(ofstream &fileTxt)
+{
+		fileTxt << '\n' << m << ' ' << n << '\n';
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				fileTxt << Mat[i][j] << ' ';
+			}
+			fileTxt << '\n';
+		}
+}
+
+Matrix Matrix::operator<<(ifstream &fileTxt)
+{
+		int col, row;
+		char space;
+		fileTxt >> col >> row;
+		//cout << col << ' ' << row << endl;
+		Matrix Temp(col, row);
+		for (int i = 0; i < col; i++) {
+			for (int j = 0; j < row; j++) {
+				//M.Display(signal);
+				fileTxt >> Temp.Element(i, j);
+				//system("cls");
+			}
+		}
+		Temp.Display(0);
+		return Temp;
+}
+
+void Matrix::WriteBin(FILE *fileBin)
+{
+	fwrite(&m, sizeof(int), 1, fileBin);
+	fwrite(&n, sizeof(int), 1, fileBin);
+	for (int i = 0; i < m; i++)
+	for (int j = 0; j < n; j++)
+		fwrite(&Mat.at(i).at(j), sizeof(double), 1, fileBin);
+}
+
+Matrix Matrix::ReadBin(FILE *fileBin)
+{
+	int col, row;
+	fread(&col, sizeof(int), 1, fileBin);
+	fread(&row, sizeof(int), 1, fileBin);
+	//cout << col << ' ' << row << endl;
+	Matrix Temp(col, row);
+	for (int i = 0; i < col; i++)
+	for (int j = 0; j < row; j++)
+		fread(&Temp.Element(i, j), sizeof(double), 1, fileBin);
+	Temp.Display(0);
+	return Temp;
+}
+
 Matrix Matrix::operator*(Matrix &rv) {
     if (n != rv.m){
         if (rv.n == n && rv.m == m){
